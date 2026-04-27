@@ -1,0 +1,10 @@
+**Table 2. Narrow-replication monetary interpretation**
+
+| Period | Sample | Annual spend per POI | Annual customers per POI | Annual spend within 500m |
+| --- | --- | --- | --- | --- |
+| Period1 2019 | All | $5,641 | 61.4 | $84,608 |
+| Period1 2019 | Disadvantaged | $738 | 0.3 | $11,069 |
+| Period2 2021 2023 | All | $1,165 | 12.3 | $9,324 |
+| Period2 2021 2023 | Disadvantaged | $593 | 10.4 | $4,745 |
+
+*Note.* Monetary impacts apply the narrow TWFE spend coefficient to average pretreatment spending, average ports per EVCS, and the average number of nearby POIs used in the replication calculation.

@@ -1,0 +1,49 @@
+# Ignore every file by default, then allowlist the GitHub package.
+*
+!*/
+
+# Root package files
+!.gitignore
+!.env.example
+!README.md
+!requirements.txt
+
+# Source code: Python only for the final package
+!code/**/*.py
+
+# Core documentation
+!docs/data_access.md
+!docs/dewey_file_manifest.csv
+!docs/dewey_schemas.md
+!docs/future_work.md
+!docs/github_upload_checklist.md
+!docs/model_architecture.md
+!docs/paper_outline.md
+!docs/reproduction.md
+
+# Manuscript-ready table drafts
+!paper/tables/**
+
+# Current paper figures only
+!output/figures/narrow/*.pdf
+!output/figures/broad/cs_event_study_All_POIs_lcus.pdf
+!output/figures/broad/cs_event_study_All_POIs_lspend.pdf
+
+# Current result tables needed for paper and replication
+!output/tables/narrow/*.csv
+!output/tables/main/*.csv
+!output/tables/broad/corrected_cs_main_summary.csv
+!output/tables/broad/cs_all_results.csv
+!output/tables/robustness/*.csv
+
+# Never ship local/secrets/proprietary/generated runtime files.
+.env
+.codex
+.codex/
+.archive/
+data/
+output/logs/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

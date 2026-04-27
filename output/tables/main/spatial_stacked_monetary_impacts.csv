@@ -1,0 +1,4 @@
+effect,beta_spend,avg_active_ports,avg_baseline_monthly_spend,n_treated_pois,monthly_spend_effect_per_poi,annual_spend_effect_per_poi,total_annual_effect_all_treated_pois,interpretation
+All competitor ports,-0.0000015784042559908243,403.8548961870963,3710.392259108031,39993,-2.365176,-28.382109,-1135086,Not statistically significant
+DC fast competitor ports,-0.00007115906271602262,74.6316981081185,3710.392259108031,39993,-19.704861,-236.458328,-9456678,Preferred monetary interpretation
+Level 2 competitor ports,0.000001010901481175713,329.22319807897776,3710.392259108031,39993,1.234864,14.818367,592631,Not statistically significant

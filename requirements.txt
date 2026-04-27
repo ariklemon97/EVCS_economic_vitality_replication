@@ -1,0 +1,12 @@
+csdid
+drdid
+geopandas
+linearmodels
+matplotlib
+numpy
+pandas
+pyarrow
+requests
+scikit-learn
+scipy
+shapely

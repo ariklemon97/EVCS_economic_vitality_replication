@@ -1,0 +1,4 @@
+source,local_subdirectory,file_count,first_partition,last_partition,example_file,notes
+global_places,data/raw/dewey/global_places,32,unknown,unknown,global-places-poi-geometry_0_0_0.snappy.parquet,"Local California global-places geometry extract; compact metadata only, no raw data redistributed."
+spend_patterns,data/raw/dewey/spend_patterns/spend,427,2019-01,2026-01,2019-01--data_01c05993-0107-0032-0042-fa07042edf46_209_0_0.snappy.parquet,"Monthly spend-pattern partitions used to build customer, spend, and income-bucket outcomes."
+foot_traffic,data/raw/dewey/foot_traffic,0,not_present_locally,not_present_locally,none,"Weekly foot-traffic feed is documented in code and can be redownloaded locally; not bundled in the repository."

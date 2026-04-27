@@ -1,0 +1,30 @@
+**Table 8. Stacked pretrend and placebo diagnostics**
+
+| Target | Outcome | Term | Estimate | SE | p |
+| --- | --- | --- | --- | --- | --- |
+| Broad | Customers | treated lead m6 | 0.0130*** | 0.0033 | < .001 |
+| Broad | Customers | treated lead m5 | 0.0134*** | 0.0032 | < .001 |
+| Broad | Customers | treated lead m4 | 0.0050 | 0.0030 | .098 |
+| Broad | Customers | treated lead m3 | 0.0003 | 0.0028 | .920 |
+| Broad | Customers | treated lead m2 | -0.0014 | 0.0025 | .571 |
+| Broad | Customers | placebo treated last3 pre months | -0.0108*** | 0.0021 | < .001 |
+| Broad | Spending | treated lead m6 | 0.0228*** | 0.0048 | < .001 |
+| Broad | Spending | treated lead m5 | 0.0193*** | 0.0047 | < .001 |
+| Broad | Spending | treated lead m4 | 0.0116* | 0.0046 | .011 |
+| Broad | Spending | treated lead m3 | 0.0004 | 0.0044 | .933 |
+| Broad | Spending | treated lead m2 | 0.0002 | 0.0041 | .968 |
+| Broad | Spending | placebo treated last3 pre months | -0.0176*** | 0.0030 | < .001 |
+| Spatial | Customers | treated lead m6 | 0.0152*** | 0.0045 | < .001 |
+| Spatial | Customers | treated lead m5 | 0.0088* | 0.0044 | .045 |
+| Spatial | Customers | treated lead m4 | 0.0024 | 0.0041 | .567 |
+| Spatial | Customers | treated lead m3 | -0.0017 | 0.0038 | .648 |
+| Spatial | Customers | treated lead m2 | 0.0001 | 0.0034 | .983 |
+| Spatial | Customers | placebo treated last3 pre months | -0.0093** | 0.0029 | .001 |
+| Spatial | Spending | treated lead m6 | 0.0155* | 0.0067 | .021 |
+| Spatial | Spending | treated lead m5 | 0.0060 | 0.0066 | .364 |
+| Spatial | Spending | treated lead m4 | 0.0003 | 0.0063 | .964 |
+| Spatial | Spending | treated lead m3 | -0.0017 | 0.0060 | .772 |
+| Spatial | Spending | treated lead m2 | -0.0021 | 0.0055 | .701 |
+| Spatial | Spending | placebo treated last3 pre months | -0.0084* | 0.0041 | .042 |
+
+*Note.* Significant pre-period terms indicate residual timing-pattern differences. These diagnostics motivate cautious causal language for stacked estimates.
