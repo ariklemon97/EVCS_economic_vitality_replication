@@ -2,13 +2,13 @@
 
 | Period | Sample | Outcome | Estimate (SE), % | 95% CI, % | p | N |
 | --- | --- | --- | --- | --- | --- | --- |
-| Period1 2019 | All | Customers | 0.163*** (0.039) | [0.087, 0.238] | < .001 | 126,594 |
-| Period1 2019 | All | Spending | 0.204*** (0.051) | [0.103, 0.304] | < .001 | 126,594 |
-| Period1 2019 | Disadvantaged | Customers | 0.002 (0.141) | [-0.274, 0.278] | .990 | 20,990 |
-| Period1 2019 | Disadvantaged | Spending | 0.069 (0.195) | [-0.314, 0.451] | .726 | 20,990 |
-| Period2 2021 2023 | All | Customers | 0.113*** (0.030) | [0.055, 0.170] | < .001 | 700,808 |
-| Period2 2021 2023 | All | Spending | 0.158*** (0.036) | [0.088, 0.228] | < .001 | 700,808 |
-| Period2 2021 2023 | Disadvantaged | Customers | 0.101 (0.075) | [-0.046, 0.248] | .177 | 94,396 |
-| Period2 2021 2023 | Disadvantaged | Spending | 0.101 (0.089) | [-0.073, 0.275] | .255 | 94,396 |
+| Period1 2019 | All | Customers | 0.179*** (0.038) | [0.104, 0.254] | < .001 | 126,351 |
+| Period1 2019 | All | Spending | 0.235*** (0.051) | [0.135, 0.335] | < .001 | 126,351 |
+| Period1 2019 | Disadvantaged | Customers | 0.166 (0.111) | [-0.051, 0.383] | .134 | 22,701 |
+| Period1 2019 | Disadvantaged | Spending | 0.269 (0.165) | [-0.056, 0.593] | .104 | 22,701 |
+| Period2 2021 2023 | All | Customers | 0.123*** (0.029) | [0.066, 0.179] | < .001 | 733,480 |
+| Period2 2021 2023 | All | Spending | 0.157*** (0.034) | [0.090, 0.225] | < .001 | 733,480 |
+| Period2 2021 2023 | Disadvantaged | Customers | 0.115 (0.061) | [-0.004, 0.234] | .059 | 178,901 |
+| Period2 2021 2023 | Disadvantaged | Spending | 0.169* (0.072) | [0.029, 0.309] | .018 | 178,901 |
 
 *Note.* Entries are log-point coefficients converted to percent units. Standard errors are clustered by POI and shown in parentheses. * p < .05, ** p < .01, *** p < .001.
