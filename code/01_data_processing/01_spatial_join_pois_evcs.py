@@ -78,7 +78,7 @@ def process_nrel_evcs():
     # Study Period 2: Opened between Feb 2021 and June 2023
     df_evcs['period_1'] = df_evcs['open_date'].dt.year == 2019
     
-    start_p2 = pd.to_datetime(f"{BROAD_WINDOW.period_2_start}01", format="%Y%m%d")
+    start_p2 = pd.to_datetime(f"{BROAD_WINDOW.p2_treatment_start}01", format="%Y%m%d")
     broad_end = str(BROAD_WINDOW.period_2_end)
     end_p2 = pd.Period(f"{broad_end[:4]}-{broad_end[4:]}", freq="M").end_time.normalize()
     df_evcs['period_2'] = (df_evcs['open_date'] >= start_p2) & (df_evcs['open_date'] <= end_p2)

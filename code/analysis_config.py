@@ -28,13 +28,15 @@ MIN_NEARBY_LOCAL_BUSINESSES = 1
 
 NARROW_PERIOD_1_START = 201901
 NARROW_PERIOD_1_END = 201912
-NARROW_PERIOD_2_START = 202102
+NARROW_PERIOD_2_START = 202101
+NARROW_PERIOD_2_TREATMENT_START = 202102
 NARROW_PERIOD_2_END = 202306
 
 
 BROAD_PERIOD_1_START = 201901
 BROAD_PERIOD_1_END = 201912
-BROAD_PERIOD_2_START = 202102
+BROAD_PERIOD_2_START = 202101
+BROAD_PERIOD_2_TREATMENT_START = 202102
 BROAD_PERIOD_2_END = 202601
 
 
@@ -50,6 +52,11 @@ class StudyWindow:
     period_1_end: int
     period_2_start: int
     period_2_end: int
+    period_2_treatment_start: int | None = None
+
+    @property
+    def p2_treatment_start(self) -> int:
+        return self.period_2_treatment_start or self.period_2_start
 
 
 NARROW_WINDOW = StudyWindow(
@@ -57,6 +64,7 @@ NARROW_WINDOW = StudyWindow(
     period_1_end=NARROW_PERIOD_1_END,
     period_2_start=NARROW_PERIOD_2_START,
     period_2_end=NARROW_PERIOD_2_END,
+    period_2_treatment_start=NARROW_PERIOD_2_TREATMENT_START,
 )
 
 
@@ -65,4 +73,5 @@ BROAD_WINDOW = StudyWindow(
     period_1_end=BROAD_PERIOD_1_END,
     period_2_start=BROAD_PERIOD_2_START,
     period_2_end=BROAD_PERIOD_2_END,
+    period_2_treatment_start=BROAD_PERIOD_2_TREATMENT_START,
 )

@@ -4,8 +4,9 @@ Final Compilation Script for Regression Panel.
 Merges monthly_spend_panel + psm_covariate_matrix into df_pre_match.csv,
 exactly following the Zheng et al. (2024) specification:
 
-  - Temporal filter: 2019 (Period 1) + Feb 2021–Jun 2023 (Period 2)
-    Jan 2020–Jan 2021 excluded (COVID lockdowns + data integration anomaly)
+  - Temporal filter: 2019 (Period 1) + Jan 2021–Jun 2023 (Period 2)
+    2020 excluded (COVID lockdowns + data integration anomaly). Jan 2021 is
+    retained as the baseline POI-outcome month; EVCS treatment starts Feb 2021.
   - Treatment variable: port_treat = D_it × PC_it
       D_it   = 1 if an EVCS was active within 500m at time t
       PC_it  = total charging ports operational within 500m at time t
@@ -194,8 +195,8 @@ def main():
 
     # ── Temporal Filter ──────────────────────────────────────────────────────
     # Keep: Jan–Dec 2019  (Period 1)
-    #       Feb 2021–Jun 2023  (Period 2)
-    # Exclude: all of 2020 + Jan 2021 (COVID lockdowns & data integration anomaly)
+    #       Jan 2021–Jun 2023  (Period 2 outcome panel; treatment starts Feb 2021)
+    # Exclude: all of 2020 (COVID lockdowns & data integration anomaly)
     pre_n = len(merged)
     keep_p1  = (
         (merged['date_numeric'] >= BROAD_WINDOW.period_1_start) &

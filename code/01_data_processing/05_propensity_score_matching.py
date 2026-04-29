@@ -19,8 +19,7 @@ Each group is:
     POI-level baseline:  baseline_lcus, baseline_lspend
 
 Disadvantaged definition: POI is in a CEC/Justice40 designated underprivileged
-community. Flag column expected: 'is_disadvantaged' (1/0).
-If absent, a fallback is derived from bottom quintile of Median_Household_Income.
+community. Flag column required: 'is_disadvantaged' (1/0).
 """
 
 import argparse
@@ -118,21 +117,19 @@ def build_poi_crosssection(df, baseline):
     return poi
 
 
-def flag_disadvantaged(poi, acs_income_col='Median_Household_Income'):
-    """
-    If 'is_disadvantaged' is missing, approximate it as being in the
-    bottom income quintile among all POIs in the sample.
-    """
+def require_disadvantaged_flag(poi, label):
+    """Require the CEC/Justice40 disadvantaged-community flag."""
     if 'is_disadvantaged' not in poi.columns:
-        logging.warning(
-            "No 'is_disadvantaged' column found. "
-            "Approximating with bottom-quintile Median_Household_Income."
+        raise ValueError(
+            f"[{label}] Missing is_disadvantaged. "
+            "Run 03_incorporate_covariates.py after downloading the CEC/Justice40 "
+            "disadvantaged-community geography."
         )
-        if acs_income_col in poi.columns:
-            threshold = poi[acs_income_col].quantile(0.2)
-            poi['is_disadvantaged'] = (poi[acs_income_col] <= threshold).astype(int)
-        else:
-            poi['is_disadvantaged'] = 0
+    poi['is_disadvantaged'] = pd.to_numeric(poi['is_disadvantaged'], errors='coerce')
+    if poi['is_disadvantaged'].isna().any():
+        missing = int(poi['is_disadvantaged'].isna().sum())
+        raise ValueError(f"[{label}] is_disadvantaged has {missing} missing POI values.")
+    poi['is_disadvantaged'] = poi['is_disadvantaged'].astype(int)
     return poi
 
 
@@ -314,7 +311,7 @@ def build_window_panels(df: pd.DataFrame, window_name: str, window: StudyWindow)
         (df['open_yyyymm'] <= window.period_1_end)
     ).astype(int)
     df['is_treated_P2'] = (
-        (df['open_yyyymm'] >= window.period_2_start) &
+        (df['open_yyyymm'] >= window.p2_treatment_start) &
         (df['open_yyyymm'] <= window.period_2_end)
     ).astype(int)
 
@@ -332,7 +329,7 @@ def build_window_panels(df: pd.DataFrame, window_name: str, window: StudyWindow)
     p1_max_seq = df_p1['date_numeric'].max()
     baseline_p1 = compute_baseline_features(df_p1, p1_max_seq)
 
-    # Period 2: baseline = Feb 2021 only (first period of P2, seq index 13)
+    # Period 2: baseline = Jan 2021 only; treatment eligibility starts Feb 2021.
     p2_min_seq = df_p2['date_numeric'].min()
     baseline_p2 = compute_baseline_features(df_p2, p2_min_seq)
 
@@ -341,8 +338,8 @@ def build_window_panels(df: pd.DataFrame, window_name: str, window: StudyWindow)
     poi_p2 = build_poi_crosssection(df_p2, baseline_p2)
 
     # ── Disadvantaged flags ───────────────────────────────────────────────────
-    poi_p1 = flag_disadvantaged(poi_p1)
-    poi_p2 = flag_disadvantaged(poi_p2)
+    poi_p1 = require_disadvantaged_flag(poi_p1, "P1")
+    poi_p2 = require_disadvantaged_flag(poi_p2, "P2")
 
     # ─────────────────────────────────────────────────────────────────────────
     # GROUP 1: Period 1 — All POIs

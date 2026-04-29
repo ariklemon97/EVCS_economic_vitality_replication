@@ -22,10 +22,13 @@
 !docs/reproduction.md
 
 # Manuscript-ready table drafts
+!paper/*.tex
 !paper/tables/**
 
 # Current paper figures only
 !output/figures/narrow/*.pdf
+!output/figures/broad/broad_stacked_event_study*.pdf
+!output/figures/broad/broad_stacked_own_port*.pdf
 !output/figures/broad/cs_event_study_All_POIs_lcus.pdf
 !output/figures/broad/cs_event_study_All_POIs_lspend.pdf
 

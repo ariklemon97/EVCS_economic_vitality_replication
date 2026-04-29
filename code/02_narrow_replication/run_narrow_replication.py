@@ -25,6 +25,15 @@ from code.estimation_utils import ensure_parent, run_absorbing_ls
 TABLE_DIR = OUTPUT_DIR / "tables" / "narrow"
 FIGURE_DIR = OUTPUT_DIR / "figures" / "narrow"
 
+plt.rcParams.update(
+    {
+        "axes.labelsize": 14,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 12,
+        "legend.fontsize": 12,
+    }
+)
+
 INCOME_BRACKETS = [
     ("cus_.25k", "<$25k"),
     ("cus_25.45k", "$25-45k"),
@@ -144,16 +153,16 @@ def run_distance_models(panels: dict[tuple[str, str], pd.DataFrame]) -> pd.DataF
     final.to_csv(TABLE_DIR / "02_distance_effects.csv", index=False)
 
     for (period, sample), chunk in final.groupby(["period", "sample"]):
-        fig, ax = plt.subplots(figsize=(9, 6))
+        fig, ax = plt.subplots(figsize=(8, 5.2))
         for outcome, outcome_chunk in chunk.groupby("outcome"):
             outcome_chunk = outcome_chunk.sort_values("distance_mid")
-            ax.plot(outcome_chunk["distance_mid"], outcome_chunk["estimate"], marker="o", label=outcome)
+            label = "Customers" if outcome == "lcus" else "Spending"
+            ax.plot(outcome_chunk["distance_mid"], outcome_chunk["estimate"], marker="o", linewidth=1.8, label=label)
             ax.vlines(outcome_chunk["distance_mid"], outcome_chunk["ci_low95"], outcome_chunk["ci_hi95"], alpha=0.8)
         ax.axhline(0, color="grey", linestyle="--")
-        ax.set_title(f"Distance Effects: {period} | {sample}")
-        ax.set_xlabel("Distance Bin Midpoint (m)")
+        ax.set_xlabel("Distance bin midpoint (m)")
         ax.set_ylabel("Estimate")
-        ax.legend()
+        ax.legend(frameon=False)
         path = FIGURE_DIR / f"02_distance_{period}_{sample}.pdf"
         ensure_parent(path)
         fig.tight_layout()
@@ -193,10 +202,9 @@ def run_income_models(panels: dict[tuple[str, str], pd.DataFrame]) -> pd.DataFra
         for (period, sample), chunk in final.groupby(["period", "sample"]):
             order = {label: idx for idx, (_, label) in enumerate(INCOME_BRACKETS)}
             chunk = chunk.sort_values("income_group", key=lambda s: s.map(order))
-            fig, ax = plt.subplots(figsize=(10, 6))
-            ax.errorbar(chunk["income_group"], chunk["estimate"], yerr=1.96 * chunk["std.error"], fmt="o")
+            fig, ax = plt.subplots(figsize=(8.5, 5.2))
+            ax.errorbar(chunk["income_group"], chunk["estimate"], yerr=1.96 * chunk["std.error"], fmt="o", capsize=4)
             ax.axhline(0, color="grey", linestyle="--")
-            ax.set_title(f"Income Heterogeneity: {period} | {sample}")
             ax.set_ylabel("Estimate")
             ax.tick_params(axis="x", rotation=30)
             path = FIGURE_DIR / f"04_income_{period}_{sample}.pdf"

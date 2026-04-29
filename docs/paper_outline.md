@@ -22,8 +22,8 @@ econometrics format: question, data, estimator, results, robustness, conclusion.
   covariates, and built-environment controls.
 - Sample: consumer-facing target NAICS sectors in a local-business context.
 - Windows:
-  - narrow: 2019 and February 2021-June 2023;
-  - broad: 2019 and February 2021-January 2026.
+  - narrow: 2019 and January 2021-June 2023 outcomes, with Period 2 EVCS treatment starting in February 2021;
+  - broad: 2019 and January 2021-January 2026 outcomes, with Period 2 EVCS treatment starting in February 2021.
 - Direct exposure: active EVCS ports within 500m, split into all ports, Level 2,
   and DC fast ports.
 - Spatial competition exposure: active charger ports at nearby same-sector

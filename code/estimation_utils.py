@@ -18,6 +18,15 @@ from csdid.att_gt import ATTgt
 from linearmodels.iv.absorbing import AbsorbingLS
 from scipy.stats import norm
 
+plt.rcParams.update(
+    {
+        "axes.labelsize": 14,
+        "xtick.labelsize": 12,
+        "ytick.labelsize": 12,
+        "legend.fontsize": 12,
+    }
+)
+
 
 def ensure_parent(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -236,13 +245,12 @@ def plot_event_study(dynamic: pd.DataFrame, title: str, output_path: Path) -> No
     if dynamic.empty:
         return
     ensure_parent(output_path)
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(dynamic["event_time"], dynamic["ATT"], marker="o")
-    ax.vlines(dynamic["event_time"], dynamic["CI_lower"], dynamic["CI_upper"], alpha=0.8)
+    fig, ax = plt.subplots(figsize=(8, 5.2))
+    ax.plot(dynamic["event_time"], dynamic["ATT"], marker="o", linewidth=1.8)
+    ax.vlines(dynamic["event_time"], dynamic["CI_lower"], dynamic["CI_upper"], alpha=0.8, linewidth=1.4)
     ax.axhline(0, color="grey", linestyle="--", linewidth=1)
     ax.axvline(-0.5, color="red", linestyle="--", linewidth=1)
-    ax.set_title(title)
-    ax.set_xlabel("Months Relative to Treatment")
+    ax.set_xlabel("Months relative to treatment")
     ax.set_ylabel("ATT")
     fig.tight_layout()
     fig.savefig(output_path)

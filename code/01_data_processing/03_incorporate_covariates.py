@@ -125,6 +125,81 @@ def load_census_data(period=1):
     return df[[c for c in keep if c in df.columns]]
 
 
+def load_disadvantaged_communities():
+    """
+    Load CEC/Justice40 disadvantaged or low-income community polygons.
+
+    The replication requires an explicit geography-based flag. Income-quintile
+    fallbacks are intentionally not used because they change the disadvantaged
+    estimand.
+    """
+    candidates = [
+        os.path.join(CEC_DIR, "ca_low_income_or_disadvantaged_communities.geojson"),
+        os.path.join(CEC_DIR, "ca_justice40_disadvantaged_communities.geojson"),
+    ]
+    candidates.extend(glob.glob(os.path.join(CEC_DIR, "*disadvantaged*.geojson")))
+    candidates.extend(glob.glob(os.path.join(CEC_DIR, "*Disadvantaged*.geojson")))
+    candidates.extend(glob.glob(os.path.join(CEC_DIR, "*justice40*.geojson")))
+    candidates.extend(glob.glob(os.path.join(CEC_DIR, "*Justice40*.geojson")))
+    candidates.extend(glob.glob(os.path.join(CEC_DIR, "*disadvantaged*.shp")))
+    candidates.extend(glob.glob(os.path.join(CEC_DIR, "*Disadvantaged*.shp")))
+
+    seen = set()
+    geographies = []
+    for path in candidates:
+        if path in seen or not os.path.exists(path):
+            continue
+        seen.add(path)
+        if os.path.getsize(path) < 1_000:
+            logging.warning("Skipping invalid small disadvantaged geography: %s", path)
+            continue
+        try:
+            gdf = gpd.read_file(path)
+        except Exception as exc:
+            logging.warning("Could not read disadvantaged geography %s: %s", path, exc)
+            continue
+        if gdf.empty or "geometry" not in gdf.columns:
+            logging.warning("Skipping empty disadvantaged geography: %s", path)
+            continue
+        if gdf.crs is None:
+            gdf = gdf.set_crs(GEO_CRS)
+        geographies.append(gdf[["geometry"]].to_crs(GEO_CRS))
+        logging.info("Loaded disadvantaged geography: %s (%s features)", path, len(gdf))
+
+    if not geographies:
+        raise FileNotFoundError(
+            "No readable CEC/Justice40 disadvantaged-community geography found in "
+            f"{CEC_DIR}. Run code/00_data_download/07_download_disadvantaged_communities.py."
+        )
+
+    combined = pd.concat(geographies, ignore_index=True)
+    combined = gpd.GeoDataFrame(combined, geometry="geometry", crs=GEO_CRS)
+    combined = combined[combined.geometry.notna() & ~combined.geometry.is_empty].copy()
+    if combined.empty:
+        raise ValueError("CEC/Justice40 disadvantaged-community geography has no valid geometries.")
+    return combined
+
+
+def add_disadvantaged_flag(gdf_poi):
+    """Spatially flag POIs inside the disadvantaged-community geography."""
+    dac = load_disadvantaged_communities()
+    poi = gdf_poi[["placekey", "geometry"]].copy()
+    if poi.crs is None:
+        poi = poi.set_crs(GEO_CRS)
+    poi = poi.to_crs(GEO_CRS)
+
+    joined = gpd.sjoin(poi, dac, how="left", predicate="intersects")
+    disadvantaged_placekeys = set(joined.loc[joined["index_right"].notna(), "placekey"])
+    out = gdf_poi.copy()
+    out["is_disadvantaged"] = out["placekey"].isin(disadvantaged_placekeys).astype(int)
+    logging.info(
+        "CEC/Justice40 disadvantaged POIs: %s/%s",
+        int(out["is_disadvantaged"].sum()),
+        out["placekey"].nunique(),
+    )
+    return out
+
+
 # =============================================================================
 # 3. EPA Smart Location Database  (block-group level)
 # =============================================================================
@@ -373,6 +448,7 @@ def main():
     gdf_poi = gpd.sjoin(gdf_poi, tracts, how='left', predicate='within')
     gdf_poi = gdf_poi.sort_values(['placekey', 'FIPS']).drop_duplicates('placekey', keep='first')
     # 'FIPS' now attached from tracts
+    gdf_poi = add_disadvantaged_flag(gdf_poi)
 
     # Derive county_fips
     gdf_poi['county_fips'] = gdf_poi['FIPS'].str[:5]

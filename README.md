@@ -21,8 +21,8 @@ the GitHub-ready code surface.
 
 ### Study windows
 
-- Narrow replication: January 2019 to December 2019 and February 2021 to June 2023.
-- Broad replication: January 2019 to December 2019 and February 2021 to January 2026.
+- Narrow replication: January 2019 to December 2019 and January 2021 to June 2023; Period 2 EVCS treatment starts in February 2021.
+- Broad replication: January 2019 to December 2019 and January 2021 to January 2026; Period 2 EVCS treatment starts in February 2021.
 
 ### Estimand
 

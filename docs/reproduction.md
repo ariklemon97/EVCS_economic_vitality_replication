@@ -80,7 +80,7 @@ blur the treatment and control definitions.
 
 ### Model choices in the final package
 
-- Narrow replication preserves the original TWFE-style design and keeps the original 2021-2023 narrow window for business-adjacent EVCS exposure.
+- Narrow replication preserves the original TWFE-style design and keeps the original 2021-2023 narrow window for business-adjacent EVCS exposure: January 2021 is retained as the baseline outcome month, while Period 2 EVCS treatment starts in February 2021.
 - Broad replication extends the second study window through January 2026 and uses Python Callaway-Sant'Anna estimators plus stacked near-treatment regressions for business-adjacent EVCS exposure.
 - Broad CS estimators use a not-yet-treated comparison group and drop cohorts first treated in the final observed period so ATT(g,t) cells have post-treatment support.
 - Matched PSM panels are window-scoped: `df_psm_narrow_*` feeds the narrow replication and `df_psm_broad_*` feeds the broad CS models.
