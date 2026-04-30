@@ -23,6 +23,50 @@ if str(PROJECT_ROOT) not in sys.path:
 logging.basicConfig(level=logging.INFO)
 OUTPUT_DIR = os.path.join(str(PROJECT_ROOT), "data", "processed")
 
+
+def load_charger_level_matches() -> pd.DataFrame | None:
+    """Load POI-to-EVCS matches so competitor ports activate by charger month."""
+    match_path = os.path.join(OUTPUT_DIR, "poi_evcs_matches.parquet")
+    if not os.path.exists(match_path):
+        logging.warning("Missing poi_evcs_matches.parquet; using POI-level competitor timing fallback.")
+        return None
+
+    matches = pd.read_parquet(match_path)
+    required = {
+        "placekey",
+        "open_yyyymm",
+        "total_ports",
+        "ev_level2_evse_num",
+        "ev_dc_fast_num",
+    }
+    missing = required - set(matches.columns)
+    if missing:
+        logging.warning(
+            "poi_evcs_matches.parquet is missing %s; using POI-level competitor timing fallback.",
+            sorted(missing),
+        )
+        return None
+
+    matches = matches.copy()
+    for col in ["open_yyyymm", "total_ports", "ev_level2_evse_num", "ev_dc_fast_num"]:
+        matches[col] = pd.to_numeric(matches[col], errors="coerce").fillna(0)
+    matches["open_yyyymm"] = matches["open_yyyymm"].astype(int)
+    if "commercial_adjacent_evcs" in matches.columns:
+        matches["commercial_adjacent_evcs"] = pd.to_numeric(
+            matches["commercial_adjacent_evcs"], errors="coerce"
+        ).fillna(0).astype(int)
+        matches = matches[matches["commercial_adjacent_evcs"] == 1].copy()
+    else:
+        matches["commercial_adjacent_evcs"] = 1
+
+    matches = matches[matches["open_yyyymm"] > 0].copy()
+    if matches.empty:
+        logging.warning("No usable charger-level POI-EVCS matches; using POI-level fallback.")
+        return None
+
+    return matches
+
+
 def spatial_competition(radius_m: int = 1000, output_suffix: str = ""):
     if radius_m <= 500:
         raise SystemExit(
@@ -83,6 +127,7 @@ def spatial_competition(radius_m: int = 1000, output_suffix: str = ""):
     controls['competitor_has_level2'] = 0
     controls['competitor_has_dc_fast'] = 0
     competitor_pairs = []
+    charger_matches = load_charger_level_matches()
     
     from scipy.spatial import cKDTree
     
@@ -162,9 +207,46 @@ def spatial_competition(radius_m: int = 1000, output_suffix: str = ""):
     logging.info(f"Saved competitive spatial map to {out_path}.")
 
     if competitor_pairs:
-        pair_df = pd.concat(competitor_pairs, ignore_index=True).drop_duplicates(
-            subset=['placekey', 'competitor_placekey', 'competitor_open_yyyymm']
-        )
+        pair_df = pd.concat(competitor_pairs, ignore_index=True)
+        if charger_matches is not None:
+            base_cols = [
+                'placekey',
+                'competitor_placekey',
+                'naics_4',
+                'competitor_distance_m',
+                'competition_radius_m',
+            ]
+            pair_df = pair_df[base_cols].drop_duplicates()
+            charger_cols = [
+                'placekey',
+                'evcs_index',
+                'evcs_id',
+                'open_yyyymm',
+                'total_ports',
+                'ev_level2_evse_num',
+                'ev_dc_fast_num',
+                'commercial_adjacent_evcs',
+            ]
+            charger_cols = [col for col in charger_cols if col in charger_matches.columns]
+            pair_df = pair_df.merge(
+                charger_matches[charger_cols].rename(
+                    columns={
+                        'placekey': 'competitor_placekey',
+                        'open_yyyymm': 'competitor_open_yyyymm',
+                        'total_ports': 'competitor_total_ports',
+                        'ev_level2_evse_num': 'competitor_level2_ports',
+                        'ev_dc_fast_num': 'competitor_dc_fast_ports',
+                        'commercial_adjacent_evcs': 'competitor_commercial_adjacent',
+                    }
+                ),
+                on='competitor_placekey',
+                how='inner',
+            )
+        dedupe_cols = [
+            col for col in ['placekey', 'competitor_placekey', 'evcs_index', 'evcs_id', 'competitor_open_yyyymm']
+            if col in pair_df.columns
+        ]
+        pair_df = pair_df.drop_duplicates(subset=dedupe_cols)
         pair_path = os.path.join(OUTPUT_DIR, f"poi_competitor_matches{suffix}.parquet")
         pair_df.to_parquet(pair_path)
         logging.info(f"Saved {len(pair_df)} POI competitor matches to {pair_path}.")

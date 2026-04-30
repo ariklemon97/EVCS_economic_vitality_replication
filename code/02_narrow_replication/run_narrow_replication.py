@@ -13,6 +13,7 @@ os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from linearmodels.panel.utility import AbsorbingEffectError
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -217,16 +218,38 @@ def run_income_models(panels: dict[tuple[str, str], pd.DataFrame]) -> pd.DataFra
 
 def run_other_outcomes(panels: dict[tuple[str, str], pd.DataFrame]) -> pd.DataFrame:
     rows = []
+    skipped = []
     for (period, sample), df in panels.items():
         for outcome, label in OTHER_OUTCOMES.items():
             if outcome not in df.columns or df[outcome].notna().sum() == 0:
                 continue
             work = df[df[outcome].notna()].copy()
             work[f"log_{outcome}"] = np.log1p(work[outcome].clip(lower=0))
-            result = run_absorbing_ls(work, f"log_{outcome}", ["port_treat"], ["placekey", "county_date"], "placekey")
+            try:
+                result = run_absorbing_ls(
+                    work,
+                    f"log_{outcome}",
+                    ["port_treat"],
+                    ["placekey", "county_date"],
+                    "placekey",
+                )
+            except AbsorbingEffectError as exc:
+                reason = next((line.strip() for line in str(exc).splitlines() if line.strip()), "absorbed regressor")
+                skipped.append(
+                    {
+                        "period": period,
+                        "sample": sample,
+                        "outcome": outcome,
+                        "outcome_label": label,
+                        "nobs": len(work),
+                        "reason": reason,
+                    }
+                )
+                continue
             rows.append(append_metadata(result, period=period, sample=sample, outcome=outcome, outcome_label=label))
     final = pd.concat(rows, ignore_index=True) if rows else pd.DataFrame()
     final.to_csv(TABLE_DIR / "05_other_outcomes.csv", index=False)
+    pd.DataFrame(skipped).to_csv(TABLE_DIR / "05_other_outcomes_skipped.csv", index=False)
     return final
 
 

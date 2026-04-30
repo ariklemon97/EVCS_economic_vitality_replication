@@ -1,0 +1,3 @@
+period,sample,outcome,outcome_label,nobs,reason
+Period1_2019,All,median_dist_home,Median Distance from Home,50,The model cannot be estimated. The included effects have fully absorbed
+Period1_2019,All,median_dwell,Median Dwell Time,56,The model cannot be estimated. The included effects have fully absorbed
